@@ -1,0 +1,6 @@
+@TrendService_HostAddress = http://localhost:5286
+
+GET {{TrendService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
