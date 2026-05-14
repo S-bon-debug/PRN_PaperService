@@ -1,29 +1,21 @@
 -- ============================================================
--- Identity Service Database
--- DB Name: identity_db
--- Handles: authentication, authorization, JWT, Google OAuth
+-- Auth Service Database
+-- DB Name: auth_db
+-- Handles: authentication, authorization, JWT, user profiles
 -- ============================================================
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TYPE auth_provider AS ENUM ('google', 'github', 'email');
-CREATE TYPE user_role AS ENUM ('researcher', 'lecturer', 'student', 'admin');
-
 CREATE TABLE users (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name            VARCHAR(255) NOT NULL,
     email           VARCHAR(255) NOT NULL UNIQUE,
-    password_hash   VARCHAR(255),                   -- NULL nếu dùng OAuth
-    avatar_url      TEXT,
-    provider        auth_provider NOT NULL DEFAULT 'email',
-    provider_id     VARCHAR(255),                   -- Google sub / GitHub id
-    role            user_role NOT NULL DEFAULT 'student',
-    is_active       BOOLEAN NOT NULL DEFAULT TRUE,
-    last_login_at   TIMESTAMP WITH TIME ZONE,
+    password_hash   VARCHAR(512) NOT NULL,
+    full_name       VARCHAR(100) NOT NULL,
+    avatar_url      VARCHAR(512),
+    role            VARCHAR(50) NOT NULL DEFAULT 'Student', -- Student, Teacher, Admin
+    status          VARCHAR(50) NOT NULL DEFAULT 'Active',  -- Active, Locked
     created_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    updated_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-
-    CONSTRAINT uq_provider UNIQUE (provider, provider_id)
+    updated_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE refresh_tokens (
@@ -36,7 +28,6 @@ CREATE TABLE refresh_tokens (
 );
 
 CREATE INDEX idx_users_email         ON users(email);
-CREATE INDEX idx_users_provider      ON users(provider, provider_id);
 CREATE INDEX idx_refresh_token       ON refresh_tokens(token);
 CREATE INDEX idx_refresh_token_user  ON refresh_tokens(user_id);
 
@@ -49,6 +40,6 @@ CREATE TRIGGER trg_users_updated_at
     BEFORE UPDATE ON users
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
--- Seed: default admin (đổi hash trước khi deploy)
-INSERT INTO users (name, email, password_hash, provider, role)
-VALUES ('Admin', 'admin@example.com', '$2b$12$CHANGE_THIS_HASH', 'email', 'admin');
+-- Seed: default admin
+INSERT INTO users (id, email, password_hash, full_name, role, status)
+VALUES (uuid_generate_v4(), 'admin@jts.com', 'hashed_password_placeholder', 'System Admin', 'Admin', 'Active');
