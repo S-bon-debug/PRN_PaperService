@@ -84,7 +84,7 @@ namespace PaperService.Services
                     var openAlexCursor = await context.SyncCursors.FirstOrDefaultAsync(c => c.SourceName == "OpenAlex", stoppingToken);
                     string cursorValue = openAlexCursor?.LastCursor ?? "*";
 
-                    var openAlexUrl = $"https://api.openalex.org/works?filter=default.search:\"Computer Science\",publication_year:{DateTime.UtcNow.Year}&per_page=10&cursor={Uri.EscapeDataString(cursorValue)}";
+                    var openAlexUrl = $"https://api.openalex.org/works?filter=default.search:\"Computer Science\",publication_year:2025&per_page=10&cursor={Uri.EscapeDataString(cursorValue)}";
                     
                     try
                     {
