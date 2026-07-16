@@ -50,11 +50,9 @@ namespace PaperService.Services
                 var context = scope.ServiceProvider.GetRequiredService<PaperDbContext>();
                 var userServiceClient = scope.ServiceProvider.GetRequiredService<IUserServiceClient>();
                 var trendServiceClient = scope.ServiceProvider.GetRequiredService<ITrendServiceClient>();
-                var adminServiceClient = scope.ServiceProvider.GetRequiredService<IAdminServiceClient>();
-
-                var apiSources = await adminServiceClient.GetApiSourcesAsync();
-                bool isOpenAlexActive = apiSources.FirstOrDefault(s => s.Name.Contains("OpenAlex", StringComparison.OrdinalIgnoreCase))?.IsActive ?? true;
-                bool isSemanticScholarActive = apiSources.FirstOrDefault(s => s.Name.Contains("Semantic", StringComparison.OrdinalIgnoreCase) || s.Name.Contains("Scholar", StringComparison.OrdinalIgnoreCase))?.IsActive ?? true;
+                // AdminService is not available on Render - hardcode both sources as active
+                bool isOpenAlexActive = true;
+                bool isSemanticScholarActive = true;
 
                 // Create a new ApiSyncJob record in the database
                 var job = new ApiSyncJob
