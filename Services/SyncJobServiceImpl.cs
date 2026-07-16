@@ -84,7 +84,7 @@ namespace PaperService.Services
                     var openAlexCursor = await context.SyncCursors.FirstOrDefaultAsync(c => c.SourceName == "OpenAlex", stoppingToken);
                     string cursorValue = openAlexCursor?.LastCursor ?? "*";
 
-                    var openAlexUrl = $"https://api.openalex.org/works?filter=default.search:\"Computer Science\",publication_year:2025&per_page=10&cursor={Uri.EscapeDataString(cursorValue)}&mailto=sonngocson25@gmail.com";
+                    var openAlexUrl = $"https://api.openalex.org/works?filter=default.search:computer,publication_year:2025&per_page=10&cursor={Uri.EscapeDataString(cursorValue)}&mailto=sonngocson25@gmail.com";
                     
                     try
                     {
@@ -233,7 +233,9 @@ namespace PaperService.Services
                         await context.SaveChangesAsync(stoppingToken);
                     }
 
-                    // 3. --- RECALCULATE SNAPSHOTS IN TREND SERVICE ---
+                    // --- RECALCULATE SNAPSHOTS IN TREND SERVICE ---
+                    // TEMPORARILY DISABLED FOR DEMO TO PREVENT HANGS
+                    /*
                     _logger.LogInformation($"Recalculating trend snapshots for {keywordsUpdated.Count} updated keywords...");
                     foreach (var kw in keywordsUpdated)
                     {
@@ -267,11 +269,11 @@ namespace PaperService.Services
                                 await trendServiceClient.RecalculateSnapshotAsync(recDto);
                             }
                         }
-                        catch (Exception recEx)
-                        {
-                            _logger.LogError(recEx, $"Error recalculating trend snapshot for keyword: {kw.Term}");
-                        }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error recalculating trend snapshot for topics.");
                     }
+                    */
 
                     // Update the sync job status to Success
                     job.Status = SyncStatus.Success;
@@ -569,7 +571,7 @@ namespace PaperService.Services
                     PaperId = paper.Id,
                     PaperTitle = paper.Title
                 };
-                await userServiceClient.TriggerNotificationAsync(notificationDto);
+                // await userServiceClient.TriggerNotificationAsync(notificationDto);
             }
 
             return true; // inserted
@@ -779,7 +781,7 @@ namespace PaperService.Services
                     PaperId = paper.Id,
                     PaperTitle = paper.Title
                 };
-                await userServiceClient.TriggerNotificationAsync(notificationDto);
+                // await userServiceClient.TriggerNotificationAsync(notificationDto);
             }
 
             return true; // inserted
