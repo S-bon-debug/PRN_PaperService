@@ -259,8 +259,6 @@ namespace PaperService.Services
                     }
 
                     // --- RECALCULATE SNAPSHOTS IN TREND SERVICE ---
-                    // TEMPORARILY DISABLED FOR DEMO TO PREVENT HANGS
-                    /*
                     _logger.LogInformation($"Recalculating trend snapshots for {keywordsUpdated.Count} updated keywords...");
                     foreach (var kw in keywordsUpdated)
                     {
@@ -400,7 +398,6 @@ namespace PaperService.Services
                     {
                         _logger.LogError(ex, "Error recalculating trend snapshot for topics.");
                     }
-                    */
 
                     // Update the sync job status to Success
                     job.Status = SyncStatus.Success;
