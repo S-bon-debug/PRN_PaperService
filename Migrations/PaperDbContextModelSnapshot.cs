@@ -273,9 +273,17 @@ namespace PaperService.Migrations
                         .HasColumnType("text[]")
                         .HasColumnName("fields_of_study");
 
+                    b.Property<string>("FullText")
+                        .HasColumnType("text")
+                        .HasColumnName("full_text");
+
                     b.Property<Guid?>("JournalId")
                         .HasColumnType("uuid")
                         .HasColumnName("journal_id");
+
+                    b.Property<string>("PdfUrl")
+                        .HasColumnType("text")
+                        .HasColumnName("pdf_url");
 
                     b.Property<short?>("PublicationYear")
                         .HasColumnType("smallint")
@@ -366,6 +374,41 @@ namespace PaperService.Migrations
                     b.HasIndex("KeywordId");
 
                     b.ToTable("paper_keywords");
+                });
+
+            modelBuilder.Entity("PaperService.Entities.ResearchMatrix", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("MatrixDataJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("matrix_data");
+
+                    b.Property<string>("PaperIdsJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("paper_ids");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<string>("UserIdeaPrompt")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("user_idea_prompt");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("research_matrices");
                 });
 
             modelBuilder.Entity("PaperService.Entities.SyncCursor", b =>
