@@ -253,7 +253,7 @@ namespace PaperService.Controllers
                 return BadRequest(new { message = "No file uploaded." });
             }
 
-            if (!file.ContentType.Contains("pdf"))
+            if (!file.FileName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) && !file.ContentType.Contains("pdf"))
             {
                 return BadRequest(new { message = "Only PDF files are accepted." });
             }
@@ -278,7 +278,7 @@ namespace PaperService.Controllers
             // Trích xuất text từ file đã lưu
             var pdfUrl = $"{Request.Scheme}://{Request.Host}/pdfs/{fileName}";
             var aiService = HttpContext.RequestServices.GetRequiredService<IAILiteratureService>();
-            var fullText = await aiService.ExtractTextFromPdfUrlAsync(pdfUrl);
+            var fullText = await aiService.ExtractTextFromPdfFileAsync(filePath);
 
             // Cập nhật Database
             paper.PdfUrl = pdfUrl;

@@ -8,6 +8,11 @@ namespace PaperService.Services
         /// Trích xuất text từ file PDF tại URL cho trước
         /// </summary>
         Task<string?> ExtractTextFromPdfUrlAsync(string pdfUrl, CancellationToken ct = default);
+        
+        /// <summary>
+        /// Trích xuất text từ file PDF từ đường dẫn vật lý
+        /// </summary>
+        Task<string?> ExtractTextFromPdfFileAsync(string filePath, CancellationToken ct = default);
 
         /// <summary>
         /// Tạo ma trận Research Gap từ danh sách bài báo và ý tưởng người dùng
