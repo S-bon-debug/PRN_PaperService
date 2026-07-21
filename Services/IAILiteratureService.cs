@@ -16,6 +16,11 @@ namespace PaperService.Services
             List<Paper> papers,
             string userIdea,
             CancellationToken ct = default);
+
+        /// <summary>
+        /// Phân tích chuyên sâu một bài báo từ nội dung text của nó
+        /// </summary>
+        Task<DTOs.DeepAnalysisResultDto> DeepAnalyzePaperAsync(string fullText, CancellationToken ct = default);
     }
 
     public class ResearchGapResultDto

@@ -200,5 +200,74 @@ I will provide you with the content of {papers.Count} research papers and my pro
                 throw;
             }
         }
+        public async Task<DTOs.DeepAnalysisResultDto> DeepAnalyzePaperAsync(string fullText, CancellationToken ct = default)
+        {
+            var apiKey = _config["GeminiApiKey"];
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                _logger.LogError("API key is not configured.");
+                throw new InvalidOperationException("AI Service is not configured properly.");
+            }
+
+            var prompt = $@"You are an expert academic researcher. Please perform a deep analysis of the following research paper text.
+Extract and summarize the information into 4 distinct sections. Return your analysis STRICTLY in valid JSON format using the following structure:
+{{
+  ""summary"": ""A high-level summary of the paper's core objective and main contribution."",
+  ""methodology"": ""A detailed description of the methods, models, datasets, or experiments used in the paper."",
+  ""findings"": ""The core results, findings, and conclusions of the paper."",
+  ""limitations"": ""Any limitations, future work, or gaps identified by the authors.""
+}}
+
+Ensure that the output is ONLY JSON and contains no markdown formatting outside of the JSON structure.
+Here is the text of the paper:
+---------------------------
+{fullText}";
+
+            try
+            {
+                _logger.LogInformation("Sending request to Gemini AI for deep paper analysis...");
+                
+                var googleAi = new GoogleAI(apiKey);
+                var model = googleAi.GenerativeModel(model: "gemini-flash-latest");
+                
+                var response = await model.GenerateContent(prompt);
+                var responseText = response?.Text ?? string.Empty;
+                
+                _logger.LogInformation("Gemini deep analysis response received.");
+
+                responseText = responseText.Trim();
+                if (responseText.StartsWith("```json"))
+                {
+                    responseText = responseText.Substring(7);
+                }
+                if (responseText.StartsWith("```"))
+                {
+                    responseText = responseText.Substring(3);
+                }
+                if (responseText.EndsWith("```"))
+                {
+                    responseText = responseText.Substring(0, responseText.Length - 3);
+                }
+                responseText = responseText.Trim();
+
+                var result = JsonSerializer.Deserialize<DTOs.DeepAnalysisResultDto>(responseText, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                return result ?? new DTOs.DeepAnalysisResultDto 
+                { 
+                    Summary = "AI returned an empty response. Please try again." 
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error calling Gemini AI for deep analysis");
+                return new DTOs.DeepAnalysisResultDto
+                {
+                    Summary = $"AI analysis failed: {ex.Message}"
+                };
+            }
+        }
     }
 }
