@@ -181,7 +181,16 @@ namespace PaperService.Services
                         var response = await client.GetAsync(p.PdfUrl, ct);
                         if (response.IsSuccessStatusCode)
                         {
-                            pdfBytes = await response.Content.ReadAsByteArrayAsync(ct);
+                            var bytes = await response.Content.ReadAsByteArrayAsync(ct);
+                            // Check for PDF magic number "%PDF"
+                            if (bytes.Length > 4 && bytes[0] == 0x25 && bytes[1] == 0x50 && bytes[2] == 0x44 && bytes[3] == 0x46)
+                            {
+                                pdfBytes = bytes;
+                            }
+                            else
+                            {
+                                _logger.LogWarning("Downloaded content from {Url} is not a valid PDF (missing %PDF header), falling back to text.", p.PdfUrl);
+                            }
                         }
                         else
                         {
