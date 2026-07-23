@@ -4,6 +4,9 @@ using PaperService.Data;
 using PaperService.Entities;
 using DotNetEnv;
 
+// Workaround for Render Linux inotify limit (128) issue:
+Environment.SetEnvironmentVariable("DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE", "false");
+
 Env.TraversePath().Load();
 
 var builder = WebApplication.CreateBuilder(args);
