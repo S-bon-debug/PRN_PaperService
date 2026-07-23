@@ -200,8 +200,7 @@ namespace PaperService.Services
                     parts.Add(new InlineData
                     {
                         MimeType = "application/pdf",
-                        Data = Convert.ToBase64String(pdfBytes),
-                        DisplayName = $"Paper_{i + 1}.pdf"
+                        Data = Convert.ToBase64String(pdfBytes)
                     });
                 }
                 else
