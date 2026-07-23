@@ -170,63 +170,18 @@ namespace PaperService.Services
                 var p = papers[i];
                 promptBuilder.AppendLine($"--- Paper [{i + 1}]: \"{p.Title}\" ---");
 
-                byte[]? pdfBytes = null;
-                if (!string.IsNullOrWhiteSpace(p.PdfUrl))
+                if (!string.IsNullOrWhiteSpace(p.FullText))
                 {
-                    try
-                    {
-                        _logger.LogInformation("Downloading PDF for Gemini analysis: {Url}", p.PdfUrl);
-                        var client = _httpClientFactory.CreateClient();
-                        client.Timeout = TimeSpan.FromSeconds(30);
-                        var response = await client.GetAsync(p.PdfUrl, ct);
-                        if (response.IsSuccessStatusCode)
-                        {
-                            var bytes = await response.Content.ReadAsByteArrayAsync(ct);
-                            // Check for PDF magic number "%PDF"
-                            if (bytes.Length > 4 && bytes[0] == 0x25 && bytes[1] == 0x50 && bytes[2] == 0x44 && bytes[3] == 0x46)
-                            {
-                                pdfBytes = bytes;
-                            }
-                            else
-                            {
-                                _logger.LogWarning("Downloaded content from {Url} is not a valid PDF (missing %PDF header), falling back to text.", p.PdfUrl);
-                            }
-                        }
-                        else
-                        {
-                            _logger.LogWarning("Failed to download PDF for analysis from {Url}. Status: {Status}", p.PdfUrl, response.StatusCode);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogWarning(ex, "Failed to download PDF from {Url} for Gemini analysis, falling back to abstract/text.", p.PdfUrl);
-                    }
+                    var text = p.FullText.Length > 8000 ? p.FullText.Substring(0, 8000) : p.FullText;
+                    promptBuilder.AppendLine(text);
                 }
-
-                if (pdfBytes != null)
+                else if (!string.IsNullOrWhiteSpace(p.Abstract))
                 {
-                    promptBuilder.AppendLine($"[Attached PDF file: Paper_{i + 1}.pdf]");
-                    parts.Add(new InlineData
-                    {
-                        MimeType = "application/pdf",
-                        Data = Convert.ToBase64String(pdfBytes)
-                    });
+                    promptBuilder.AppendLine($"Abstract: {p.Abstract}");
                 }
                 else
                 {
-                    if (!string.IsNullOrWhiteSpace(p.FullText))
-                    {
-                        var text = p.FullText.Length > 8000 ? p.FullText.Substring(0, 8000) : p.FullText;
-                        promptBuilder.AppendLine(text);
-                    }
-                    else if (!string.IsNullOrWhiteSpace(p.Abstract))
-                    {
-                        promptBuilder.AppendLine($"Abstract: {p.Abstract}");
-                    }
-                    else
-                    {
-                        promptBuilder.AppendLine("(No abstract or PDF file available)");
-                    }
+                    promptBuilder.AppendLine("(No abstract or PDF file available)");
                 }
                 promptBuilder.AppendLine();
             }
