@@ -2,13 +2,13 @@
 
 Backend service for collecting, searching, and analyzing academic papers in the Journal Trend Tracker system.
 
-> **Team project.** This service was split from a shared microservices codebase. I authored 33 of the 50 visible commits in this repository and document my own work below.
+> **Team project.** This service was split from a shared microservices codebase. The repository keeps the development history so each member's work can be reviewed transparently.
 
-## Overview
+## 📌 Overview
 
 Paper Service provides a REST API for paper discovery, search, suggestions, synchronization from external scholarly sources, PDF analysis, and research-gap analysis.
 
-## Main features
+## ✨ Main features
 
 - Search, filter, paginate, and retrieve paper details
 - Keyword, journal, and author suggestions
@@ -18,7 +18,7 @@ Paper Service provides a REST API for paper discovery, search, suggestions, sync
 - Research-gap matrix analysis using a hybrid DB and OpenAlex search flow
 - Swagger API documentation, Docker build, and health-check endpoints
 
-## Tech stack
+## 🛠 Tech stack
 
 | Category | Technology |
 |---|---|
@@ -30,7 +30,7 @@ Paper Service provides a REST API for paper discovery, search, suggestions, sync
 | AI | Gemini API |
 | Deployment | Docker, Render-compatible configuration |
 
-## Architecture
+## 🧩 Architecture
 
 ```mermaid
 flowchart LR
@@ -44,15 +44,15 @@ flowchart LR
   api --> user[User service]
 ```
 
-## My contributions
+## 👤 Work I contributed
 
-- Implemented and maintained Paper Service infrastructure, entities, database context, migrations, search, and pagination.
-- Built background synchronization workers for OpenAlex and Semantic Scholar.
-- Added PDF deep analysis and AI-assisted research-gap matrix analysis.
-- Fixed production issues involving database migration, CORS, dependency injection, disposed service scopes, API payload validation, and Render deployment limits.
-- Collaborated through feature branches, merges, and conflict resolution.
+- Paper Service infrastructure, entities, database context, migrations, search, and pagination.
+- Background synchronization for OpenAlex and Semantic Scholar.
+- PDF deep analysis and AI-assisted research-gap matrix analysis.
+- Bug fixes for database migration, CORS, dependency injection, API payload validation, and deployment constraints.
+- Collaboration through feature branches, merges, and conflict resolution.
 
-## Run locally
+## 🚀 Run locally
 
 ### Prerequisites
 
@@ -73,14 +73,14 @@ dotnet run
 
 The service applies Entity Framework Core migrations during startup. Swagger is available from the local application URL, and health checks are exposed at `/health` and `/api/papers/health`.
 
-## Docker
+## 🐳 Docker
 
 ```bash
 docker build -t paper-service .
 docker run --env-file .env -p 8080:8080 paper-service
 ```
 
-## Security
+## 🔐 Security
 
 - Keep secrets in `.env`; the file is excluded by `.gitignore`.
 - Use `.env.example` only as a template.
